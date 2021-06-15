@@ -12,8 +12,8 @@
 /build
 
 # misc
-.png
-/.txt
+*.png
+*.txt
 .DS_Store
 .env.local
 .env.development.local
