@@ -4,10 +4,6 @@ import prettier from 'prettier';
 import parser from 'prettier/parser-babel';
 // parser is to format advanced javascript codes that might have ES2015, 2016 etc.
 
-import Highlighter from 'monaco-jsx-highlighter';
-import { parse } from '@babel/parser';
-import bundler from '../bundler';
-import traverse from '@babel/traverse';
 // import j from "jscodeshift"
 
 import './code-editor.scss';
@@ -24,26 +20,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ onChange }) => {
   const editorRef = useRef<any>();
 
   const onMountEditor: OnMount = (editor) => {
+    // Minimal Babel setup for React JSX parsing:
+    
     editorRef.current = editor;
     editor.onDidChangeModelContent(() => {
       onChange(editor.getValue());
     });
-    // Minimal Babel setup for React JSX parsing:
-    const babelParse = (code: any) => {
-      return parse(code, {
-        sourceType: 'module',
-        plugins: ['jsx'],
-      });
-    };
-
-    // const highlighter = new Highlighter(
-    //   // @ts-ignore
-    //   window.monaco,
-    //   babelParse,
-    //   traverse,
-    //   editor
-    // );
-    // highlighter.highLightOnDidChangeModelContent(100);
+    
   };
 
   const onFormatClick = () => {
