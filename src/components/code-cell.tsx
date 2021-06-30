@@ -5,15 +5,22 @@ import bundler from '../bundler';
 import CodeEditor from '../components/code-editor';
 import Preview from '../components/preview';
 import Resizable from './resizable';
+import { Cell } from '../state';
+import { useActions } from '../hooks/use-actions';
 
-const CodeCell = () => {
-  const [input, setInput] = useState('');
-  const [code, setCode] = useState('');
+interface CodeCellProps {
+  cell: Cell;
+}
+
+const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const [error, setError] = useState('');
+  const [code, setCode] = useState('');
+
+  const { updateCell } = useActions();
 
   useEffect(() => {
     const timer = setTimeout(async () => {
-      const result = await bundler(input);
+      const result = await bundler(cell.content);
 
       // setCode(result.outputFiles[0].text);
       // this is the code that has been built by the plugins and esbuild
@@ -32,7 +39,7 @@ const CodeCell = () => {
     return () => {
       clearTimeout(timer);
     };
-  }, [input]);
+  }, [cell.content]);
 
   // const html = `
   //   <script>
@@ -46,9 +53,8 @@ const CodeCell = () => {
       <div style={{ height: '100%', display: 'flex', flexDirection: 'row' }}>
         <CodeEditor
           initialValue='tes'
-          onChange={(code: string) => {
-            setInput(code);
-            // onClick(e.target.value);
+          onChange={(value: string) => {
+            updateCell(cell.id, value);
           }}
         ></CodeEditor>
         <Preview code={code} errorMessage={error} />
