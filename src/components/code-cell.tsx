@@ -1,45 +1,36 @@
-import { useState, useEffect } from 'react';
-import 'bulmaswatch/superhero/bulmaswatch.min.css';
+import { useEffect } from 'react';
+import './code-cell.css';
 
-import bundler from '../bundler';
 import CodeEditor from '../components/code-editor';
 import Preview from '../components/preview';
 import Resizable from './resizable';
 import { Cell } from '../state';
 import { useActions } from '../hooks/use-actions';
+import { useTypedSelector } from '../hooks/use-typed-selector';
 
 interface CodeCellProps {
   cell: Cell;
 }
 
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
-  const [error, setError] = useState('');
-  const [code, setCode] = useState('');
-
-  const { updateCell } = useActions();
+  const { updateCell, createBundle } = useActions();
+  const bundle = useTypedSelector((state) => state.bundles[cell.id]);
 
   useEffect(() => {
+    if (!bundle) {
+      createBundle(cell.id, cell.content);
+      return;
+    }
+
     const timer = setTimeout(async () => {
-      const result = await bundler(cell.content);
+      createBundle(cell.id, cell.content);
+    }, 750);
 
-      // setCode(result.outputFiles[0].text);
-      // this is the code that has been built by the plugins and esbuild
-
-      // eval(result.outputFiles[0].text);
-      // naive approach on executing files in the browser, because it can be harmful
-      // for example, when the text is document.body.innerHTML = "";
-
-      // console.log(iframe.current.contentWindow);
-      // this is the same as parent.postMessage in console
-      // this is to trigger the message event listener, which will then execute the eval
-      // is also a way to send the text to the iframe, even though the access are not allowed
-      setCode(result.code);
-      setError(result.err);
-    }, 1000);
     return () => {
       clearTimeout(timer);
     };
-  }, [cell.content]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cell.content, cell.id, createBundle]);
 
   // const html = `
   //   <script>
@@ -47,17 +38,36 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   //   </script>
   // `;
   // this is dangerous when the input is (<script>...</script>)
-
+  // if (bundle) console.log(bundle.code);
+  const preview =
+    !bundle || bundle.loading ? (
+      <div className='progress-cover'>
+        <progress className='progress is-small is-primary' max='100'>
+          Loading
+        </progress>
+      </div>
+    ) : (
+      <Preview code={bundle.code} err={bundle.err} />
+    );
   return (
     <Resizable direction='vertical'>
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'row' }}>
-        <CodeEditor
-          initialValue='tes'
-          onChange={(value: string) => {
-            updateCell(cell.id, value);
-          }}
-        ></CodeEditor>
-        <Preview code={code} errorMessage={error} />
+      <div
+        style={{
+          height: 'calc(100% - 10px)',
+          display: 'flex',
+          flexDirection: 'row',
+        }}
+      >
+        <Resizable direction='horizontal'>
+          <CodeEditor
+            code={cell.content}
+            onChange={(value: string) => updateCell(cell.id, value)}
+          />
+        </Resizable>
+        <div className='progress-wrapper'>
+          {/* {bundle && <Preview code={bundle.code} errorMessage={bundle.err} />} */}
+          {preview}
+        </div>
       </div>
     </Resizable>
   );

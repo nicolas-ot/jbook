@@ -9,10 +9,8 @@ import parser from 'prettier/parser-babel';
 import './code-editor.scss';
 import './syntax.css';
 
-import Resizable from './resizable';
-
 interface CodeEditorProps {
-  initialValue?: string;
+  code: string;
   onChange(code: string | undefined): void;
 }
 
@@ -21,12 +19,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ onChange }) => {
 
   const onMountEditor: OnMount = (editor) => {
     // Minimal Babel setup for React JSX parsing:
-    
+
     editorRef.current = editor;
     editor.onDidChangeModelContent(() => {
       onChange(editor.getValue());
     });
-    
   };
 
   const onFormatClick = () => {
@@ -45,35 +42,33 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ onChange }) => {
   };
 
   return (
-    <Resizable direction='horizontal'>
-      <div className='editor-wrapper'>
-        <button
-          className='button button-format is-primary is-small'
-          style={{ float: 'right' }}
-          onClick={onFormatClick}
-        >
-          Format
-        </button>
-        <MonacoEditor
-          onMount={onMountEditor}
-          // onChange={onChangeEditor}
-          // value={code}
-          language='javascript'
-          theme='vs-dark'
-          options={{
-            tabSize: 2,
-            minimap: { enabled: false },
-            wordWrap: 'on',
-            showUnused: false,
-            folding: false,
-            lineNumbersMinChars: 3,
-            fontSize: 16,
-            scrollBeyondLastLine: false,
-            automaticLayout: true,
-          }}
-        ></MonacoEditor>
-      </div>
-    </Resizable>
+    <div className='editor-wrapper'>
+      <button
+        className='button button-format is-primary is-small'
+        style={{ float: 'right' }}
+        onClick={onFormatClick}
+      >
+        Format
+      </button>
+      <MonacoEditor
+        onMount={onMountEditor}
+        // onChange={onChangeEditor}
+        // value={code}
+        language='javascript'
+        theme='vs-dark'
+        options={{
+          tabSize: 2,
+          minimap: { enabled: false },
+          wordWrap: 'on',
+          showUnused: false,
+          folding: false,
+          lineNumbersMinChars: 3,
+          fontSize: 16,
+          scrollBeyondLastLine: false,
+          automaticLayout: true,
+        }}
+      ></MonacoEditor>
+    </div>
   );
 };
 
