@@ -14,10 +14,6 @@
   animation: fadeIn 0.5s;
 }
 
-.tes {
-  display: flex;
-}
-
 @keyframes fadeIn {
   0% {
     opacity: 0;
