@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import MonacoEditor, { OnMount } from '@monaco-editor/react';
 import prettier from 'prettier';
 import parser from 'prettier/parser-babel';
@@ -14,7 +14,7 @@ interface CodeEditorProps {
   onChange(code: string | undefined): void;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ onChange }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ onChange, code }) => {
   const editorRef = useRef<any>();
 
   const onMountEditor: OnMount = (editor) => {
@@ -24,6 +24,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ onChange }) => {
     editor.onDidChangeModelContent(() => {
       onChange(editor.getValue());
     });
+
+    editor.setValue(code);
   };
 
   const onFormatClick = () => {

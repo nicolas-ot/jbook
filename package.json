@@ -1,4 +1,5 @@
 {
+  "homepage": "http://nicolas-ot.github.io/jbook",
   "name": "jbook",
   "version": "0.1.0",
   "private": true,
@@ -25,6 +26,7 @@
     "localforage": "^1.9.0",
     "monaco-editor": "^0.23.0",
     "monaco-jsx-highlighter": "^1.1.8",
+    "node": "^16.4.0",
     "node-sass": "^6.0.0",
     "prettier": "^2.3.1",
     "react": "^17.0.2",
@@ -40,6 +42,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "predeploy": "node --expose-gc --max-old-space-size=8192 node_modules/react-scripts/scripts/build.js",
+    "deploy": "gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -62,6 +66,7 @@
     ]
   },
   "devDependencies": {
-    "@types/node-sass": "^4.11.1"
+    "@types/node-sass": "^4.11.1",
+    "gh-pages": "^3.2.3"
   }
 }
